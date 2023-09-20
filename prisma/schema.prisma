@@ -1,0 +1,242 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["public"]
+}
+
+// model Offices {
+//   id                 String       @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+//   officeName         String       @unique @map("office_name")
+//   officeAbbreviation String       @unique @map("office_abbreviation")
+//   serviceId          String       @map("service_id") @db.Uuid
+//   isHeadOffice       BoolStatus   @default(false) @map("is_head_office")
+//   activeStatus       ActiveStatus @default(active) @map("active_status")
+//   createdAt          DateTime     @default(now()) @map("created_at")
+//   updatedAt          DateTime     @default(now()) @updatedAt @map("updated_at")
+//   service            Services     @relation("offices-services", fields: [serviceId], references: [id])
+
+//   @@map("offices")
+//   @@schema("public")
+// }
+
+// model Services {
+//   id          String    @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+//   serviceName String    @unique @map("service_name")
+//   createdAt   DateTime  @default(now()) @map("created_at")
+//   updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+//   offices     Offices[] @relation("offices-services")
+
+//   @@map("services")
+//   @@schema("public")
+// }
+
+// model Positions {
+//   id           String   @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+//   positionName String   @unique @map("position_name")
+//   createdAt    DateTime @default(now()) @map("created_at")
+
+//   @@map("positions")
+//   @@schema("public")
+// }
+
+// ! ---------------------------------------------------------------------------------------------------
+
+model Employees {
+  id                    String       @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+  employeeID            String?      @map("employee_id")
+  biometricsNo          String?      @map("biometrics_no")
+  employment            String?      @map("employment")
+  lastName              String       @map("last_name")
+  firstName             String       @map("first_name")
+  middleName            String?      @map("middle_name")
+  genealogySuffix       String?      @map("genealogy_suffix")
+  activeStatus          ActiveStatus @default(active) @map("active_status")
+  qrCode                String?      @default(dbgenerated("gen_random_uuid()")) @map("qr_code") @db.Uuid
+  qrCodeActiveStatus    ActiveStatus @default(active) @map("qr_code_active_status")
+  barCode               String?      @default(dbgenerated("gen_random_uuid()")) @map("bar_code") @db.Uuid
+  barCodeActiveStatus   ActiveStatus @default(active) @map("bar_code_active_status")
+  rfidUID               String?      @map("rfid_uid")
+  rfidUIDActiveStatus   ActiveStatus @default(active) @map("rfid_uid_active_status")
+  rfidTag               String?      @map("rfid_tag")
+  rfidTagActiveStatus   ActiveStatus @default(active) @map("rfid_tag_active_status")
+  serviceName           String?      @map("service_name")
+  dateAppointment       String?      @map("date_appointment")
+  dateAppointmentExpiry String?      @map("date_appointment_expiry")
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @default(now()) @updatedAt @map("updated_at")
+
+  timeLogs TimeLogs[] @relation("employees-time_logs")
+
+  @@map("employees")
+  @@schema("public")
+}
+
+model Trainees {
+  id                  String       @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+  traineeID           String?      @map("trainee_id")
+  designation         String?      @map("designation")
+  lastName            String       @map("last_name")
+  firstName           String       @map("first_name")
+  middleName          String?      @map("middle_name")
+  genealogySuffix     String?      @map("genealogy_suffix")
+  activeStatus        ActiveStatus @default(active) @map("active_status")
+  qrCode              String?      @default(dbgenerated("gen_random_uuid()")) @map("qr_code") @db.Uuid
+  qrCodeActiveStatus  ActiveStatus @default(active) @map("qr_code_active_status")
+  barCode             String?      @default(dbgenerated("gen_random_uuid()")) @map("bar_code") @db.Uuid
+  barCodeActiveStatus ActiveStatus @default(active) @map("bar_code_active_status")
+  rfidUID             String?      @map("rfid_uid")
+  rfidUIDActiveStatus ActiveStatus @default(active) @map("rfid_uid_active_status")
+  rfidTag             String?      @map("rfid_tag")
+  rfidTagActiveStatus ActiveStatus @default(active) @map("rfid_tag_active_status")
+  organization        String?      @map("organization")
+  rotationStart       String?      @map("rotation_start")
+  rotationEnd         String?      @map("rotation_end")
+  registeredAt        String?      @map("registered_at")
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @default(now()) @updatedAt @map("updated_at")
+
+  timeLogs TimeLogs[] @relation("trainees-time_logs")
+
+  @@map("trainees")
+  @@schema("public")
+}
+
+// ! ---------------------------------------------------------------------------------------------------
+
+model TimeLogs {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+  userType    UserType   @default(employee) @map("user_type")
+  employeesID String?    @map("employees_id") @db.Uuid
+  traineesID  String?    @map("trainees_id") @db.Uuid
+  accessType  AccessType @default(qr_code) @map("access_type")
+  timeLog     String?    @map("time_log")
+  movement    Movement   @default(in) @map("movement")
+  location    Location   @default(main_gate) @map("location")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  employee Employees? @relation("employees-time_logs", fields: [employeesID], references: [id])
+  trainees Trainees?  @relation("trainees-time_logs", fields: [traineesID], references: [id])
+
+  @@map("time_logs")
+  @@schema("public")
+}
+
+enum UserType {
+  employee
+  trainee
+  watcher
+  visitor
+
+  @@schema("public")
+}
+
+enum AccessType {
+  qr_code
+  bar_code
+  rfid_uid
+  rfid_tag
+
+  @@schema("public")
+}
+
+enum Movement {
+  in
+  out
+
+  @@schema("public")
+}
+
+enum Location {
+  main_gate
+  opd_gate
+  back_gate
+
+  @@schema("public")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+// model employees_main {
+//   id                     BigInt  @id(map: "employees_main_duplicate_pkey")
+//   employment             String?
+//   employee_id            String?
+//   title                  String?
+//   last_name              String?
+//   first_name             String?
+//   middle_name            String?
+//   suffix_name            String?
+//   birth_date             String?
+//   birth_place            String?
+//   sex                    String?
+//   civil_status           String?
+//   citizenship            String?
+//   height                 Float?
+//   weight                 Float?
+//   blood_type             String?
+//   gsis_id                String?
+//   pagibig_id             String?
+//   philhealth_id          String?
+//   sss_id                 String?
+//   resident_address       String?
+//   resident_municipality  String?
+//   resident_district      String?
+//   resident_province      String?
+//   resident_zip           BigInt?
+//   permanent_address      String?
+//   permanent_municipality String?
+//   permanent_district     String?
+//   permanent_province     String?
+//   permanent_zip          BigInt?
+//   telephone_no           String?
+//   email_address          String?
+//   mobile_no              BigInt?
+//   tin                    String?
+//   service_name           String?
+//   date_appointment       String?
+//   date_promotion         String?
+//   position               String?
+//   present_salary         String?
+//   salary_grade           String?
+//   step                   BigInt?
+//   bank                   String?
+//   account_no             String?
+//   biometrics_no          String?
+
+//   @@ignore
+//   @@schema("public")
+// }
+
+// /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+// model trainees_main {
+//   trainee_id       String?
+//   last_name        String?
+//   first_name       String?
+//   middle_name      String?
+//   genealogy_suffix String?
+//   designation      String?
+//   organization     String?
+//   rotation_start   String?
+//   rotation_end     String?
+//   registered_at    String?
+
+//   @@ignore
+//   @@schema("public")
+// }
+
+enum BoolStatus {
+  true
+  false
+
+  @@schema("public")
+}
+
+enum ActiveStatus {
+  active
+  inactive
+
+  @@schema("public")
+}
