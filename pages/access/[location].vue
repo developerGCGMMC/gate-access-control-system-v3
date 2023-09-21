@@ -3,17 +3,19 @@
         middleware: ['access']
     });
 
+    import moment from 'moment';
+
     const runtimeConfig = useRuntimeConfig();
     const { $socket } = useNuxtApp();
     const route = useRoute();
 
-    const no_profile_picture = runtimeConfig.public.IMAGE_URL+'/no_profile_picture.png';
+    const no_picture = runtimeConfig.public.IMAGE_URL+'/employee_no_picture.png';
 
     // ! ---------------------------------------------------------------------------------------------------
 
     const getUserDetails = (time_log, detail) => {
-        if(detail == 'full_name') {
-            return (time_log.employee.middleName && time_log.employee.middleName != null && time_log.employee.middleName != 'null')
+        if(time_log.userType == 'employee' && detail == 'full_name') {
+            return (time_log.employee.middleName && time_log.employee.middleName != 'null')
                 ? (time_log.employee.firstName+" "+time_log.employee.middleName.charAt(0)+". "+time_log.employee.lastName)
                 : (time_log.employee.firstName+" "+time_log.employee.lastName)
         }
@@ -43,7 +45,7 @@
                 return avatar_url+'/901-1000/'+biometrics_no+'.jpg';
             }
             else if(biometrics_no >= 1001 && biometrics_no <= 1100) {
-                return avatar_url+'/1001-2000/'+biometrics_no+'.jpg';
+                return avatar_url+'/1001-1100/'+biometrics_no+'.jpg';
             } else if(biometrics_no >= 1101 && biometrics_no <= 1200) {
                 return avatar_url+'/1101-1200/'+biometrics_no+'.jpg';
             } else if(biometrics_no >= 1201 && biometrics_no <= 1300) {
@@ -137,7 +139,23 @@
             } else if(biometrics_no >= 5401 && biometrics_no <= 5500) {
                 return avatar_url+'/5401-5500/'+biometrics_no+'.jpg';
             }
+            else {
+                return runtimeConfig.public.IMAGE_URL+'/employee_no_picture.png';
+            }
         }
+
+        // ! ---------------------------------------------------------------------------------------------------
+
+        if(time_log.userType == 'trainee' && detail == 'avatar_url') {
+            return runtimeConfig.public.IMAGE_URL+'/trainee_no_picture.png';
+        }
+        if(time_log.userType == 'trainee' && detail == 'full_name') {
+            return (time_log.trainee.middleName && time_log.trainee.middleName != 'null')
+                ? (time_log.trainee.firstName+" "+time_log.trainee.middleName.charAt(0)+". "+time_log.trainee.lastName)
+                : (time_log.trainee.firstName+" "+time_log.trainee.lastName)
+        }
+
+        // ! ---------------------------------------------------------------------------------------------------
 
         return null;
     };
@@ -156,7 +174,7 @@
     // ! ---------------------------------------------------------------------------------------------------
 
     onMounted(() => {
-        $socket.on('broadcastTimeLogs', (data) => {
+        $socket.on('broadcastTimeLogs', () => {
             refreshTimelogs();
         });
     });
@@ -172,11 +190,18 @@
             <div class="card w-full h-full glass shadow-xl ease-in-out duration-300">
                 <figure>
                     <img :src="getUserDetails(time_log, 'avatar_url')"
-                        @error="$event.target.src = no_profile_picture" />
+                        @error="$event.target.src = no_picture" />
                 </figure>
                 <div class="card-body">
                     <h2 class="card-title">{{ getUserDetails(time_log, 'full_name') }}</h2>
-                    <p class="font-mono tracking-wide">{{ time_log.employee.serviceName }}</p>
+                    <p v-if="time_log.userType == 'employee'" class="font-mono tracking-wide">{{ time_log.employee.serviceName }}</p>
+
+                    <p v-if="time_log.userType == 'trainee' && !time_log.trainee.organization" class="font-mono tracking-wide">{{ time_log.trainee.designation }}</p>
+                    <p v-if="time_log.userType == 'trainee'" class="font-mono tracking-wide">{{ time_log.trainee.organization }}</p>
+
+                    <div class="card-actions justify-end">
+                        <span class="font-mono tracking-wide">{{ moment(time_log.timeLog).format("LTS") }}</span> 
+                    </div>
                 </div>
             </div>
         </div>

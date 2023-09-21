@@ -120,7 +120,7 @@ model TimeLogs {
   createdAt   DateTime   @default(now()) @map("created_at")
 
   employee Employees? @relation("employees-time_logs", fields: [employeesID], references: [id])
-  trainees Trainees?  @relation("trainees-time_logs", fields: [traineesID], references: [id])
+  trainee  Trainees?  @relation("trainees-time_logs", fields: [traineesID], references: [id])
 
   @@map("time_logs")
   @@schema("public")

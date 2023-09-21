@@ -18,12 +18,20 @@ export default defineEventHandler(async (event) => {
             timeLog: true,
             employee: {
                 select: {
-                    employeeID: true,
                     biometricsNo: true,
                     lastName: true,
                     firstName: true,
                     middleName: true,
                     serviceName: true
+                }
+            },
+            trainee: {
+                select: {
+                    designation: true,
+                    lastName: true,
+                    firstName: true,
+                    middleName: true,
+                    organization: true
                 }
             }
         },

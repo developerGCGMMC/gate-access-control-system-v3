@@ -8,6 +8,12 @@
     fetchAccessCodes();
 
     onMounted(async() => {
+        setInterval(() => {
+            fetchAccessCodes();
+        }, (1000 * 60) * 15);
+
+        // ! ---------------------------------------------------------------------------------------------------
+
         $socket.emit('broadcastTest', 'Hello World!');
 
         $socket.on('broadcastingTest', (data) => {

@@ -9,7 +9,8 @@
     const { access_codes } = storeToRefs(useAccessCodeStore());
     const { recordTimeLog } = useTimeLogStore();
     const access_code = reactive({
-        employees: access_codes.value.data.employees
+        employees: access_codes.value.data.employees,
+        trainees: access_codes.value.data.trainees
     });
 
     const image_banner = runtimeConfig.public.IMAGE_URL+"/banner.png";
@@ -50,6 +51,8 @@
                     ? 'opd_gate'
                     : 'back_gate');
 
+            // ! ---------------------------------------------------------------------------------------------------
+
             let matched_employee_qr_code = access_code.employees.qr_codes.find((qr_code) => {
                 return qr_code == code;
             }) ?? null;
@@ -60,11 +63,27 @@
                 return rfid_tag == code;
             }) ?? null;
 
+            let matched_trainee_qr_code = access_code.trainees.qr_codes.find((qr_code) => {
+                return qr_code == code;
+            }) ?? null;
+            let matched_trainee_bar_code = access_code.trainees.bar_codes.find((bar_code) => {
+                return bar_code == code;
+            }) ?? null;
+            let matched_trainee_rfid_tag = access_code.trainees.rfid_tags.find((rfid_tag) => {
+                return rfid_tag == code;
+            }) ?? null;
+
             console.groupCollapsed('Code Matches:');
             console.log('matched_employee_qr_code: '+matched_employee_qr_code);
             console.log('matched_employee_bar_code: '+matched_employee_bar_code);
             console.log('matched_employee_rfid_tag: '+matched_employee_rfid_tag);
+            console.log('---------- ---------- ---------- ---------- ---------- ----------');
+            console.log('matched_trainee_qr_code: '+matched_trainee_qr_code);
+            console.log('matched_trainee_bar_code: '+matched_trainee_bar_code);
+            console.log('matched_trainee_rfid_tag: '+matched_trainee_rfid_tag);
             console.groupEnd();
+
+            // ! ---------------------------------------------------------------------------------------------------
 
             if(matched_employee_qr_code) {
                 matched_code.user = 'employee';
@@ -82,9 +101,28 @@
                 matched_code.code = matched_employee_rfid_tag;
             }
 
+            if(matched_trainee_qr_code) {
+                matched_code.user = 'trainee';
+                matched_code.access = 'qr_code';
+                matched_code.code = matched_trainee_qr_code;
+            }
+            if(matched_trainee_bar_code) {
+                matched_code.user = 'trainee';
+                matched_code.access = 'bar_code';
+                matched_code.code = matched_trainee_bar_code;
+            }
+            if(matched_trainee_rfid_tag) {
+                matched_code.user = 'trainee';
+                matched_code.access = 'rfid_tag';
+                matched_code.code = matched_trainee_rfid_tag;
+            }
+
+            // ! ---------------------------------------------------------------------------------------------------
+
             if(matched_code.code) {
-                console.log('Active User');
+                console.groupCollapsed('Matched Code');
                 console.log(matched_code);
+                console.groupEnd();
 
                 recordTimeLog(matched_code);
 
