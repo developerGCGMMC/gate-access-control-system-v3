@@ -9,7 +9,7 @@
     const { $socket } = useNuxtApp();
     const route = useRoute();
 
-    const no_picture = runtimeConfig.public.IMAGE_URL+'/employee_no_picture.png';
+    const no_picture = runtimeConfig.public.IMAGE_URL+'/no_picture_employee.jpg';
 
     // ! ---------------------------------------------------------------------------------------------------
 
@@ -140,14 +140,14 @@
                 return avatar_url+'/5401-5500/'+biometrics_no+'.jpg';
             }
             else {
-                return runtimeConfig.public.IMAGE_URL+'/employee_no_picture.png';
+                return runtimeConfig.public.IMAGE_URL+'/no_picture_employee.jpg';
             }
         }
 
         // ! ---------------------------------------------------------------------------------------------------
 
         if(time_log.userType == 'trainee' && detail == 'avatar_url') {
-            return runtimeConfig.public.IMAGE_URL+'/trainee_no_picture.png';
+            return runtimeConfig.public.IMAGE_URL+'/no_picture_trainee.jpg';
         }
         if(time_log.userType == 'trainee' && detail == 'full_name') {
             return (time_log.trainee.middleName && time_log.trainee.middleName != 'null')
@@ -174,32 +174,40 @@
     // ! ---------------------------------------------------------------------------------------------------
 
     onMounted(() => {
-        $socket.on('broadcastTimeLogs', () => {
+        $socket.on('broadcastTimeLogs', (data) => {
             refreshTimelogs();
+
+            console.groupCollapsed('broadcastTimeLogs');
+            console.log(data);
+            console.groupEnd();
         });
     });
 </script>
 <template>
-    <div class="grid
-        grid-cols-12
-        gap-2
+    <div class="grid grid-cols-12 gap-2
         pt-2
-        2xl:pb-2 xl:pb-2 lg:pb-32 md:pb-36 sm:pb-80 pb-80 px-2">
+        2xl:pb-2 xl:pb-2 lg:pb-32 md:pb-36 sm:pb-80 pb-96 px-2">
         <div v-for="(time_log, index) in time_logs" :key="time_log.id"
             class="2xl:col-span-3 xl:col-span-3 lg:col-span-6 md:col-span-6 sm:col-span-6 col-span-12">
-            <div class="card w-full h-full glass shadow-xl ease-in-out duration-300">
+            <div class="card w-full h-full glass shadow-xl">
                 <figure>
                     <img :src="getUserDetails(time_log, 'avatar_url')"
                         @error="$event.target.src = no_picture" />
                 </figure>
-                <div class="card-body">
+                <div class="card-body px-5">
                     <h2 class="card-title">{{ getUserDetails(time_log, 'full_name') }}</h2>
                     <p v-if="time_log.userType == 'employee'" class="font-mono tracking-wide">{{ time_log.employee.serviceName }}</p>
 
                     <p v-if="time_log.userType == 'trainee' && !time_log.trainee.organization" class="font-mono tracking-wide">{{ time_log.trainee.designation }}</p>
                     <p v-if="time_log.userType == 'trainee'" class="font-mono tracking-wide">{{ time_log.trainee.organization }}</p>
 
-                    <div class="card-actions justify-end">
+                    <div class="divider my-3"></div>
+
+                    <div class="card-actions justify-end items-end">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+
                         <span class="font-mono tracking-wide">{{ moment(time_log.timeLog).format("LTS") }}</span> 
                     </div>
                 </div>

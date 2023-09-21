@@ -28,17 +28,43 @@ export default defineEventHandler(async (event) => {
 
             if(matched_employee) {
                 try {
-                    const time_log = await prisma.TimeLogs.create({
-                        data: {
-                            userType: matched_code.user,
-                            employeesID: matched_employee.id,
-                            accessType: matched_code.access,
-                            timeLog: moment().format('YYYY-MM-DD HH:mm:ss'),
-                            location: matched_code.location
+                    const existing_time_log = await prisma.TimeLogs.findFirst({
+                        select: {
+                            id: true
+                        },
+                        where: {
+                            timeLog: {
+                                lte: moment().format('YYYY-MM-DD HH:mm:ss'),
+                                gte: moment().subtract(1, 'minutes').format('YYYY-MM-DD HH:mm:ss')
+                            },
+                            employeesID: matched_employee.id
                         }
                     });
 
-                    return time_log;
+                    // return existing_time_log;
+
+                    if(!existing_time_log) {
+                        const time_log = await prisma.TimeLogs.create({
+                            data: {
+                                userType: matched_code.user,
+                                employeesID: matched_employee.id,
+                                accessType: matched_code.access,
+                                timeLog: moment().format('YYYY-MM-DD HH:mm:ss'),
+                                location: matched_code.location
+                            }
+                        });
+
+                        return {
+                            data: time_log
+                        }
+                    } else {
+                        return {
+                            data: {
+                                userType: matched_code.user,
+                                employeesID: matched_employee.id
+                            }
+                        }
+                    }
                 } catch(error) {
                     console.error(error);
 
@@ -46,7 +72,7 @@ export default defineEventHandler(async (event) => {
                 }
             } else {
                 return {
-                    message: '[ERROR] No query match.'
+                    message: '[ERROR] No match employee'
                 }
             }
         } catch(error) {
@@ -77,17 +103,41 @@ export default defineEventHandler(async (event) => {
 
             if(matched_trainee) {
                 try {
-                    const time_log = await prisma.TimeLogs.create({
-                        data: {
-                            userType: matched_code.user,
-                            traineesID: matched_trainee.id,
-                            accessType: matched_code.access,
-                            timeLog: moment().format('YYYY-MM-DD HH:mm:ss'),
-                            location: matched_code.location
+                    const existing_time_log = await prisma.TimeLogs.findFirst({
+                        select: {
+                            id: true
+                        },
+                        where: {
+                            timeLog: {
+                                lte: moment().format('YYYY-MM-DD HH:mm:ss'),
+                                gte: moment().subtract(1, 'minutes').format('YYYY-MM-DD HH:mm:ss')
+                            },
+                            traineesID: matched_trainee.id
                         }
                     });
 
-                    return time_log;
+                    if(!existing_time_log) {
+                        const time_log = await prisma.TimeLogs.create({
+                            data: {
+                                userType: matched_code.user,
+                                traineesID: matched_trainee.id,
+                                accessType: matched_code.access,
+                                timeLog: moment().format('YYYY-MM-DD HH:mm:ss'),
+                                location: matched_code.location
+                            }
+                        });
+
+                        return {
+                            data: time_log
+                        };
+                    } else {
+                        return {
+                            data: {
+                                userType: matched_code.user,
+                                traineesID: matched_trainee.id
+                            }
+                        }
+                    }
                 } catch(error) {
                     console.error(error);
 
@@ -95,7 +145,7 @@ export default defineEventHandler(async (event) => {
                 }
             } else {
                 return {
-                    message: '[ERROR] No query match.'
+                    message: '[ERROR] No match trainee'
                 }
             }
         } catch(error) {
@@ -104,15 +154,6 @@ export default defineEventHandler(async (event) => {
             throw error;
         }
     } else {
-        // ! HERE trainees
-        // try {
-
-        // } catch(error) {
-        //     console.error(error);
-
-        //     throw error;
-        // }
-
         return {
             message: '[ERROR] No match.'
         }

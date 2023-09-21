@@ -128,7 +128,7 @@
 
                 setTimeout(() => {
                     scan_code.value = null;
-                }, 100);
+                }, 150);
             } else {
                 show_no_authorization_alert.value = true;
 
@@ -138,7 +138,7 @@
 
                 scan_code.value = null;
             }
-        }, 200);
+        }, 100);
     };
 
     const clearMatchedCode = () => {
@@ -231,7 +231,7 @@
                         sec
                     </div>
                 </div>
-                <span class="text-xs font-mono">For correction and inquiries, call 247, IMISS - Software Development Team</span>
+                <span class="2xl:text-sm xl:text-sm lg:text-sm md:text-sm sm:text-xs text-xs font-mono">For correction and inquiries, call 247, IMISS - Software Development Team</span>
             </div>
 
             <div class="2xl:col-span-3 xl:col-span-3 lg:col-span-3 md:col-span-12 sm:col-span-12 col-span-12
