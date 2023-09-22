@@ -28,13 +28,7 @@
 
     const show_no_authorization_alert = ref(false);
 
-    const { focused: focusScanCode } = useFocus(ref_scan_code, { initialValue: true });
-
-    const route_name = route.params.location == 'main'
-        ? 'Main Gate'
-        : (route.params.location == 'opd'
-            ? 'OPD Entrance / Exit'
-            : 'Back Gate');
+    const { focused: focus_scan_code } = useFocus(ref_scan_code, { initialValue: true });
 
     // ! ---------------------------------------------------------------------------------------------------
 
@@ -152,7 +146,7 @@
 
     onMounted(() => {
         setInterval(() => {
-            focusScanCode.value = true;
+            focus_scan_code.value = true;
 
             document.getElementById('clock_year').style.setProperty('--value', moment().format('YY'));
             document.getElementById('clock_month').style.setProperty('--value', moment().format('MM'));
@@ -236,7 +230,8 @@
 
             <div class="2xl:col-span-3 xl:col-span-3 lg:col-span-3 md:col-span-12 sm:col-span-12 col-span-12
                 w-full h-full items-center justify-items-center">
-                <div class="form-control w-full max-w-xs">
+                <div v-show="(route.fullPath == '/access/main' || route.fullPath == '/access/opd' || route.fullPath == '/access/back')"
+                    class="form-control w-full max-w-xs">
                     <input v-model="scan_code"
                         ref="ref_scan_code"
                         @update:model-value="processCode($event)"
@@ -244,7 +239,14 @@
                         placeholder="QR Code / Barcode / RFID"
                         class="input input-bordered input-md w-full" />
                     <label class="label">
-                        <span class="font-mono text-sm">Location: {{ route_name }}</span>
+                        <span class="font-mono text-sm">Location: {{ route.params.location == 'main'
+                            ? 'Main Gate'
+                            : (route.params.location == 'opd'
+                                ? 'OPD Entrance / Exit'
+                                : (route.params.location == 'back'
+                                    ? 'Back Gate'
+                                    : null)) }}
+                        </span>
                     </label>
                 </div>
             </div>
