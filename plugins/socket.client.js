@@ -1,11 +1,9 @@
 import io from 'socket.io-client';
 
 export default defineNuxtPlugin(() => {
-    // const runtimeConfig = useRuntimeConfig();
-    // const socket = runtimeConfig.NODE_ENV == 'development' ? io('http://localhost:3000') : io();
+    const runtimeConfig = useRuntimeConfig();
 
-    // const socket = io();
-    const socket = io('http://192.168.7.3:8080');
+    const socket = io(runtimeConfig.public.SOCKET_ADDRESS);
 
     return {
         provide: {

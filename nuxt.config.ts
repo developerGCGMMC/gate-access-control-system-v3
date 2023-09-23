@@ -32,7 +32,9 @@ export default defineNuxtConfig({
         public: {
             AVATAR_EMPLOYEES_URL: process.env.AVATAR_EMPLOYEES_URL,
             AVATAR_NO_PICTURE_URL: process.env.AVATAR_NO_PICTURE_URL,
-            IMAGE_URL: process.env.IMAGE_URL
+            IMAGE_URL: process.env.IMAGE_URL,
+
+            SOCKET_ADDRESS: process.env.SOCKET_ADDRESS
         }
     },
     supabase: {

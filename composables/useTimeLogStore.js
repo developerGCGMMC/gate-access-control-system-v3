@@ -2,6 +2,8 @@ export const useTimeLogStore = defineStore('time_log', () => {
     const runtimeConfig = useRuntimeConfig();
     const { $socket } = useNuxtApp();
 
+    const avatar_no_picture_url = runtimeConfig.public.AVATAR_NO_PICTURE_URL;
+
     const recordTimeLog = async (matched_code) => {
         const { data: data, error } = await useFetch('/api/timelogs/record', {
             method: 'POST',
@@ -211,16 +213,14 @@ export const useTimeLogStore = defineStore('time_log', () => {
                 return avatar_url+'/5401-5500/'+biometrics_no+'.jpg';
             }
             
-            return runtimeConfig.public.AVATAR_NO_PICTURE_URL+'/employee/blank.jpg';
+            return avatar_no_picture_url+'/employee/blank.jpg';
         }
 
         // ! ---------------------------------------------------------------------------------------------------
 
         if(time_log.userType == 'trainee' && detail == 'avatar_url') {
-            const avatar_no_picture_url = runtimeConfig.public.AVATAR_NO_PICTURE_URL;
-
             if(time_log.trainee.organization == null || time_log.trainee.organization == 'null') {
-                return runtimeConfig.public.AVATAR_NO_PICTURE_URL+'/trainee/blank.jpg';
+                return avatar_no_picture_url+'/trainee/blank.jpg';
             }
             if(time_log.trainee.organization == 'Holy Name University') {
                 return avatar_no_picture_url+'/trainee/hnu.jpg';
@@ -238,7 +238,7 @@ export const useTimeLogStore = defineStore('time_log', () => {
                 return avatar_no_picture_url+'/trainee/uv.jpg';
             }
 
-            return runtimeConfig.public.AVATAR_NO_PICTURE_URL+'/trainee/blank.jpg';
+            return avatar_no_picture_url+'/trainee/blank.jpg';
         }
         if(time_log.userType == 'trainee' && detail == 'full_name') {
             return (time_log.trainee.middleName && time_log.trainee.middleName != 'null')

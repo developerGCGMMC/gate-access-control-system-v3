@@ -13,7 +13,7 @@
         trainees: access_codes.value.data.trainees
     });
 
-    const image_banner = runtimeConfig.public.IMAGE_URL+"/banner.png";
+    const image_banner = runtimeConfig.public.IMAGE_URL+"/banner_shadow.png";
 
     var timer = 0;
     const scan_code = ref(null);
@@ -161,7 +161,7 @@
     <div>
         <div v-if="show_no_authorization_alert"
             class="alert alert-error
-            mt-5">
+                mt-5">
             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
             <span class="text-xl font-mono">Warning: No Authorization!</span>
         </div>
@@ -170,14 +170,17 @@
         <footer class="footer p-5 bg-base-200 text-base-content
             grid grid-cols-12 gap-1
             fixed bottom-0">
-            <div class="2xl:col-span-3 xl:col-span-3 lg:col-span-3 md:col-span-12 sm:col-span-12 col-span-12
-                w-full h-full items-center justify-items-start">
-                <img :src="image_banner" />
-                <span class="font-mono text-base">Gate Access Control System ver.3 (beta)</span>
+            <div class="2xl:col-span-3 xl:col-span-4 lg:col-span-12 md:col-span-12 sm:col-span-12 col-span-12
+                w-full h-full
+                items-center justify-items-start">
+                <NuxtLink to="/">
+                    <img :src="image_banner" />
+                </NuxtLink>
             </div>
 
-            <div class="2xl:col-span-6 xl:col-span-6 lg:col-span-6 md:col-span-12 sm:col-span-12 col-span-12
-                w-full h-full items-center justify-items-center">
+            <div class="2xl:col-span-6 xl:col-span-4 lg:col-span-12 md:col-span-12 sm:col-span-12 col-span-12
+                w-full h-full
+                items-center justify-items-center">
                 <div class="grid grid-flow-col auto-cols-max
                     2xl:gap-5 xl:gap-5 lg:gap-5 md:gap-4 sm:gap-3 gap-2
                     text-center">
@@ -225,29 +228,66 @@
                         sec
                     </div>
                 </div>
-                <span class="2xl:text-sm xl:text-sm lg:text-sm md:text-sm sm:text-xs text-xs font-mono">For correction and inquiries, call 247, IMISS - Software Development Team</span>
+                <span class="2xl:text-sm xl:text-sm lg:text-sm md:text-sm sm:text-xs text-xs font-mono">For correction and inquiries, call 247 - IMISS Software Development Team</span>
             </div>
 
-            <div class="2xl:col-span-3 xl:col-span-3 lg:col-span-3 md:col-span-12 sm:col-span-12 col-span-12
-                w-full h-full items-center justify-items-center">
+            <div class="2xl:col-span-3 xl:col-span-4 lg:col-span-12 md:col-span-12 sm:col-span-12 col-span-12
+                w-full h-full
+                grid content-center justify-items-center">
                 <div v-show="(route.fullPath == '/access/main' || route.fullPath == '/access/opd' || route.fullPath == '/access/back')"
-                    class="form-control w-full max-w-xs">
-                    <input v-model="scan_code"
-                        ref="ref_scan_code"
-                        @update:model-value="processCode($event)"
-                        type="text"
-                        placeholder="QR Code / Barcode / RFID"
-                        class="input input-bordered input-md w-full" />
-                    <label class="label">
-                        <span class="font-mono text-sm">Location: {{ route.params.location == 'main'
-                            ? 'Main Gate'
-                            : (route.params.location == 'opd'
-                                ? 'OPD Entrance / Exit'
-                                : (route.params.location == 'back'
-                                    ? 'Back Gate'
-                                    : null)) }}
+                    class="w-full">
+                    <div class="w-full flex justify-start items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                        </svg>
+                        &nbsp;
+                        <span class="font-mono tracking-widest">{{ route.params.location == 'main'
+                                    ? 'Main Gate'
+                                    : (route.params.location == 'opd'
+                                        ? 'OPD Gate'
+                                        : (route.params.location == 'back'
+                                            ? 'Back Gate'
+                                            : null)) }}
                         </span>
-                    </label>
+                    </div>
+                    <div class="form-control w-full mt-1">
+                        <input v-model="scan_code"
+                            ref="ref_scan_code"
+                            @update:model-value="processCode($event)"
+                            type="text"
+                            placeholder="QR Code / Barcode / RFID"
+                            class="input input-bordered input-md w-full" />
+                    </div>
+                </div>
+
+                <div v-show="route.fullPath == '/'"
+                    class="join shadow-md">
+                    <NuxtLink to="/access/main" class="btn btn-ghost btn-active join-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                        </svg>
+                        Main
+                    </NuxtLink>
+                    <NuxtLink to="/access/opd" class="btn btn-ghost btn-active join-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                        </svg>
+                        OPD
+                    </NuxtLink>
+                    <NuxtLink to="/access/back" class="btn btn-ghost btn-active join-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                        </svg>
+                        Back
+                    </NuxtLink>
+                </div>
+
+                <div class="w-full text-center">
+                    <span class="font-mono font-semibold tracking-widest uppercase">Gate Access Control System 3.1 (beta)</span>
                 </div>
             </div>
         </footer>
