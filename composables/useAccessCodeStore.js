@@ -4,7 +4,7 @@ export const useAccessCodeStore = defineStore('access_codes', () => {
     });
 
     const fetchAccessCodes = async () => {
-        const { data: codes, error } = await useFetch('/api/access/list', {
+        const { data: codes, error } = await useFetch('/api/web/access/list', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json'
@@ -22,6 +22,10 @@ export const useAccessCodeStore = defineStore('access_codes', () => {
         }
 
         access_codes.data = codes.value;
+
+        // console.groupCollapsed('Access Codes:');
+        // console.log(access_codes.data);
+        // console.groupEnd();
     };
 
     return {

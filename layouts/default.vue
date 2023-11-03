@@ -7,13 +7,14 @@
     const route = useRoute();
 
     const { access_codes } = storeToRefs(useAccessCodeStore());
-    const { recordTimeLog } = useTimeLogStore();
+
     const access_code = reactive({
         employees: access_codes.value.data.employees,
-        trainees: access_codes.value.data.trainees
+        trainees: access_codes.value.data.trainees,
+        remote_workers: access_codes.value.data.remote_workers
     });
 
-    const image_banner = runtimeConfig.public.IMAGE_URL+"/banner_shadow.png";
+    const image_banner = runtimeConfig.public.IMAGE_URL+"/banner/banner_shadow.png";
 
     var timer = 0;
     const scan_code = ref(null);
@@ -53,8 +54,8 @@
             let matched_employee_bar_code = access_code.employees.bar_codes.find((bar_code) => {
                 return bar_code == code;
             }) ?? null;
-            let matched_employee_rfid_tag = access_code.employees.rfid_tags.find((rfid_tag) => {
-                return rfid_tag == code;
+            let matched_employee_rfid_hf_tag = access_code.employees.rfid_hf_tags.find((rfid_hf_tag) => {
+                return rfid_hf_tag == code;
             }) ?? null;
 
             let matched_trainee_qr_code = access_code.trainees.qr_codes.find((qr_code) => {
@@ -63,19 +64,33 @@
             let matched_trainee_bar_code = access_code.trainees.bar_codes.find((bar_code) => {
                 return bar_code == code;
             }) ?? null;
-            let matched_trainee_rfid_tag = access_code.trainees.rfid_tags.find((rfid_tag) => {
-                return rfid_tag == code;
+            let matched_trainee_rfid_hf_tag = access_code.trainees.rfid_hf_tags.find((rfid_hf_tag) => {
+                return rfid_hf_tag == code;
             }) ?? null;
 
-            console.groupCollapsed('Code Matches:');
-            console.log('matched_employee_qr_code: '+matched_employee_qr_code);
-            console.log('matched_employee_bar_code: '+matched_employee_bar_code);
-            console.log('matched_employee_rfid_tag: '+matched_employee_rfid_tag);
-            console.log('---------- ---------- ---------- ---------- ---------- ----------');
-            console.log('matched_trainee_qr_code: '+matched_trainee_qr_code);
-            console.log('matched_trainee_bar_code: '+matched_trainee_bar_code);
-            console.log('matched_trainee_rfid_tag: '+matched_trainee_rfid_tag);
-            console.groupEnd();
+            let matched_remote_worker_qr_code = access_code.remote_workers.qr_codes.find((qr_code) => {
+                return qr_code == code;
+            }) ?? null;
+            let matched_remote_worker_bar_code = access_code.remote_workers.bar_codes.find((bar_code) => {
+                return bar_code == code;
+            }) ?? null;
+            let matched_remote_worker_rfid_hf_tag = access_code.remote_workers.rfid_hf_tags.find((rfid_hf_tag) => {
+                return rfid_hf_tag == code;
+            }) ?? null;
+
+            // console.groupCollapsed('Code Matches:');
+            // console.log('matched_employee_qr_code: '+matched_employee_qr_code);
+            // console.log('matched_employee_bar_code: '+matched_employee_bar_code);
+            // console.log('matched_employee_rfid_hf_tag: '+matched_employee_rfid_hf_tag);
+            // console.log('---------- ---------- ---------- ---------- ---------- ----------');
+            // console.log('matched_trainee_qr_code: '+matched_trainee_qr_code);
+            // console.log('matched_trainee_bar_code: '+matched_trainee_bar_code);
+            // console.log('matched_trainee_rfid_hf_tag: '+matched_trainee_rfid_hf_tag);
+            // console.log('---------- ---------- ---------- ---------- ---------- ----------');
+            // console.log('matched_remote_worker_qr_code: '+matched_remote_worker_qr_code);
+            // console.log('matched_remote_worker_bar_code: '+matched_remote_worker_bar_code);
+            // console.log('matched_remote_worker_rfid_hf_tag: '+matched_remote_worker_rfid_hf_tag);
+            // console.groupEnd();
 
             // ! ---------------------------------------------------------------------------------------------------
 
@@ -87,12 +102,12 @@
             if(matched_employee_bar_code) {
                 matched_code.user = 'employee';
                 matched_code.access = 'bar_code';
-                matched_code.code = matched_employee_qr_code;
+                matched_code.code = matched_employee_bar_code;
             }
-            if(matched_employee_rfid_tag) {
+            if(matched_employee_rfid_hf_tag) {
                 matched_code.user = 'employee';
-                matched_code.access = 'rfid_tag';
-                matched_code.code = matched_employee_rfid_tag;
+                matched_code.access = 'rfid_hf_tag';
+                matched_code.code = matched_employee_rfid_hf_tag;
             }
 
             if(matched_trainee_qr_code) {
@@ -105,18 +120,34 @@
                 matched_code.access = 'bar_code';
                 matched_code.code = matched_trainee_bar_code;
             }
-            if(matched_trainee_rfid_tag) {
+            if(matched_trainee_rfid_hf_tag) {
                 matched_code.user = 'trainee';
-                matched_code.access = 'rfid_tag';
-                matched_code.code = matched_trainee_rfid_tag;
+                matched_code.access = 'rfid_hf_tag';
+                matched_code.code = matched_trainee_rfid_hf_tag;
+            }
+
+            if(matched_remote_worker_qr_code) {
+                matched_code.user = 'remote_worker';
+                matched_code.access = 'qr_code';
+                matched_code.code = matched_remote_worker_qr_code;
+            }
+            if(matched_remote_worker_bar_code) {
+                matched_code.user = 'remote_worker';
+                matched_code.access = 'bar_code';
+                matched_code.code = matched_remote_worker_bar_code;
+            }
+            if(matched_remote_worker_rfid_hf_tag) {
+                matched_code.user = 'remote_worker';
+                matched_code.access = 'rfid_hf_tag';
+                matched_code.code = matched_remote_worker_rfid_hf_tag;
             }
 
             // ! ---------------------------------------------------------------------------------------------------
 
             if(matched_code.code) {
-                console.groupCollapsed('Matched Code');
-                console.log(matched_code);
-                console.groupEnd();
+                // console.groupCollapsed('Matched Code');
+                // console.log(matched_code);
+                // console.groupEnd();
 
                 recordTimeLog(matched_code);
 
@@ -132,7 +163,44 @@
 
                 scan_code.value = null;
             }
-        }, 100);
+        }, 200);
+    };
+
+    const recordTimeLog = async (matched_code) => {
+        const { data: time_log, error } = await useFetch('/api/web/timelogs/record', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                matched_code: matched_code
+            })
+        });
+
+        if(error.value) {
+            const { statusCode, statusMessage } = error?.value;
+
+            console.error(statusCode+': '+statusMessage);
+
+            return;
+        }
+
+        console.groupCollapsed('Response: recordTimeLog');
+        console.log(time_log.value);
+        console.groupEnd();
+
+        // ! ---------------------------------------------------------------------------------------------------
+
+        // $broadcastChannel.send({
+        //     type: 'broadcast',
+        //     event: 'broadcast-index',
+        //     payload: time_log.value
+        // });
+        // $broadcastChannel.send({
+        //     type: 'broadcast',
+        //     event: 'broadcast-location',
+        //     payload: time_log.value
+        // });
     };
 
     const clearMatchedCode = () => {
@@ -144,7 +212,7 @@
 
     // ! ---------------------------------------------------------------------------------------------------
 
-    onMounted(() => {
+    onMounted(async () => {
         setInterval(() => {
             focus_scan_code.value = true;
 
@@ -155,6 +223,8 @@
             document.getElementById('clock_minute').style.setProperty('--value', moment().format('mm'));
             document.getElementById('clock_seconds').style.setProperty('--value', moment().format('ss'));
         }, 1000);
+
+        // ! ---------------------------------------------------------------------------------------------------
     });
 </script>
 <template>
@@ -287,7 +357,7 @@
                 </div>
 
                 <div class="w-full text-center">
-                    <span class="font-mono font-semibold tracking-widest uppercase">Gate Access Control System 3.1 (beta)</span>
+                    <span class="font-mono font-semibold tracking-widest uppercase">Gate Access Control System 3.2 (beta)</span>
                 </div>
             </div>
         </footer>

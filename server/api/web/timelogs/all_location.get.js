@@ -14,19 +14,34 @@ export default defineEventHandler(async (event) => {
             location: true,
             employee: {
                 select: {
+                    id: true,
                     biometricsNo: true,
                     lastName: true,
                     firstName: true,
                     middleName: true,
+                    genealogySuffix: true,
                     serviceName: true
                 }
             },
             trainee: {
                 select: {
+                    id: true,
                     designation: true,
                     lastName: true,
                     firstName: true,
                     middleName: true,
+                    genealogySuffix: true,
+                    organization: true
+                }
+            },
+            remoteWorker: {
+                select: {
+                    id: true,
+                    designation: true,
+                    lastName: true,
+                    firstName: true,
+                    middleName: true,
+                    genealogySuffix: true,
                     organization: true
                 }
             }
@@ -50,19 +65,34 @@ export default defineEventHandler(async (event) => {
             location: true,
             employee: {
                 select: {
+                    id: true,
                     biometricsNo: true,
                     lastName: true,
                     firstName: true,
                     middleName: true,
+                    genealogySuffix: true,
                     serviceName: true
                 }
             },
             trainee: {
                 select: {
+                    id: true,
                     designation: true,
                     lastName: true,
                     firstName: true,
                     middleName: true,
+                    genealogySuffix: true,
+                    organization: true
+                }
+            },
+            remoteWorker: {
+                select: {
+                    id: true,
+                    designation: true,
+                    lastName: true,
+                    firstName: true,
+                    middleName: true,
+                    genealogySuffix: true,
                     organization: true
                 }
             }
@@ -86,19 +116,34 @@ export default defineEventHandler(async (event) => {
             location: true,
             employee: {
                 select: {
+                    id: true,
                     biometricsNo: true,
                     lastName: true,
                     firstName: true,
                     middleName: true,
+                    genealogySuffix: true,
                     serviceName: true
                 }
             },
             trainee: {
                 select: {
+                    id: true,
                     designation: true,
                     lastName: true,
                     firstName: true,
                     middleName: true,
+                    genealogySuffix: true,
+                    organization: true
+                }
+            },
+            remoteWorker: {
+                select: {
+                    id: true,
+                    designation: true,
+                    lastName: true,
+                    firstName: true,
+                    middleName: true,
+                    genealogySuffix: true,
                     organization: true
                 }
             }

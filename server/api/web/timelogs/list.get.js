@@ -2,41 +2,49 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) => {
-    const request = getQuery(event);
-    const location_name = request.location == 'main'
-        ? 'main_gate'
-        : (request.location == 'opd'
-            ? 'opd_gate'
-            : 'back_gate');
+    const { location } = getQuery(event);
 
     const data = await prisma.TimeLogs.findMany({
         select: {
             id: true,
             userType: true,
-            // employeesID: true,
-            // traineesID: true,
             timeLog: true,
             employee: {
                 select: {
+                    id: true,
                     biometricsNo: true,
                     lastName: true,
                     firstName: true,
                     middleName: true,
+                    genealogySuffix: true,
                     serviceName: true
                 }
             },
             trainee: {
                 select: {
+                    id: true,
                     designation: true,
                     lastName: true,
                     firstName: true,
                     middleName: true,
+                    genealogySuffix: true,
+                    organization: true
+                }
+            },
+            remoteWorker: {
+                select: {
+                    id: true,
+                    designation: true,
+                    lastName: true,
+                    firstName: true,
+                    middleName: true,
+                    genealogySuffix: true,
                     organization: true
                 }
             }
         },
         where: {
-            location: location_name
+            location: location
         },
         orderBy: {
             createdAt: 'desc'

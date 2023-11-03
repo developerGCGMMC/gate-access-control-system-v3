@@ -7,7 +7,7 @@ export default defineNuxtConfig({
         ['@pinia/nuxt', {
             autoImports: ['defineStore', 'definePiniaStore']
         }],
-        './modules/socket.js'
+        // './modules/socket.js'
     ],
     app: {
         head: {
@@ -29,16 +29,23 @@ export default defineNuxtConfig({
         SUPABASE_URL: process.env.SUPABASE_URL,
         SUPABASE_KEY: process.env.SUPABASE_KEY,
 
+        DATABASE_URL: process.env.DATABASE_URL,
+
         public: {
             AVATAR_EMPLOYEES_URL: process.env.AVATAR_EMPLOYEES_URL,
             AVATAR_NO_PICTURE_URL: process.env.AVATAR_NO_PICTURE_URL,
             IMAGE_URL: process.env.IMAGE_URL,
 
-            SOCKET_ADDRESS: process.env.SOCKET_ADDRESS
+            SOCKET_ADDRESS: process.env.SOCKET_ADDRESS,
+
+            REALTIME_URL: process.env.REALTIME_URL,
+            API_KEY: process.env.SUPABASE_KEY
         }
     },
     supabase: {
         redirect: false
     },
-    devtools: { enabled: false }
+    devtools: {
+        enabled: false
+    }
 })

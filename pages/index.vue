@@ -2,18 +2,18 @@
     import moment from 'moment';
 
     const runtimeConfig = useRuntimeConfig();
-    const { $socket } = useNuxtApp();
-    // const route = useRoute();
 
+    const { $realtimeClient, $broadcastChannel } = useNuxtApp();
     const { getUserDetails } = useTimeLogStore();
 
     const no_picture_employee_gcgmmc = runtimeConfig.public.AVATAR_NO_PICTURE_URL+'/employee/gcgmmc.jpg';
     const no_picture_trainee_blank = runtimeConfig.public.AVATAR_NO_PICTURE_URL+'/trainee/blank.jpg';
+    const no_picture_remote_worker_blank = runtimeConfig.public.AVATAR_NO_PICTURE_URL+'/remote_worker/blank.jpg';
 
     // ! ---------------------------------------------------------------------------------------------------
 
-    const { data: time_logs, refresh: refreshTimelogs } = await useAsyncData('timelogs', async () =>
-        $fetch('/api/timelogs/all_location', {
+    const { data: all_time_logs, refresh: refreshTimelogs } = await useAsyncData('timelogs', async () =>
+        $fetch('/api/web/timelogs/all_location', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json'
@@ -23,30 +23,92 @@
 
     // ! ---------------------------------------------------------------------------------------------------
 
-    onMounted(() => {
-        $socket.on('broadcastTimeLogs', (data) => {
+    onMounted(async () => {
+        setInterval(() => {
             refreshTimelogs();
+        }, (1000 * 60) * 5);
 
-            console.groupCollapsed('broadcastTimeLogs');
-            console.log(data);
+        // ! ---------------------------------------------------------------------------------------------------
+
+        let realtimeChannel = $realtimeClient.channel('db-changes');
+
+        realtimeChannel.on('postgres_changes', {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'time_logs'
+        }, (payload) => {
+            console.groupCollapsed('[Realtime: Index] TimeLogs - Insert');
+            console.log(payload);
             console.groupEnd();
+
+            refreshTimelogs();
         });
+
+        realtimeChannel.subscribe((status) => {
+            // if(status === 'SUBSCRIBED') {
+            //     console.log('Ready to receive database changes.');
+            // }
+            if(status !== 'SUBSCRIBED') { return; }
+        });
+
+        // ! ---------------------------------------------------------------------------------------------------
+
+        // $broadcastChannel.on('broadcast', {
+        //     event: 'broadcast-index'
+        // }, ({ payload }) => {
+        //     console.groupCollapsed('[Broadcast - Index] TimeLog - Insert');
+        //     console.log(payload);
+        //     console.groupEnd();
+
+        //     console.log(payload.data.location);
+
+        //     console.groupCollapsed('[Broadcast - Index] all_time_logs');
+        //     console.log(all_time_logs.value);
+        //     console.groupEnd();
+
+        //     if(payload.status == 'inserted') {
+        //         refreshTimelogs();
+        //         if(payload.data.location == 'main_gate') {
+        //             all_time_logs.value.main_gate.unshift(payload.data);
+        //             all_time_logs.value.main_gate.splice(5);
+        //         }
+        //         if(payload.data.location == 'opd_gate') {
+        //             all_time_logs.value.opd_gate.unshift(payload.data);
+        //             all_time_logs.value.opd_gate.splice(5);
+        //         }
+        //         if(payload.data.location == 'back_gate') {
+        //             all_time_logs.value.back_gate.unshift(payload.data);
+        //             all_time_logs.value.back_gate.splice(5);
+        //         }
+        //     }
+        // });
+
+        // ! ---------------------------------------------------------------------------------------------------
+
+        console.groupCollapsed('[onMounted - Index] all_time_logs');
+        console.log(all_time_logs.value);
+        console.groupEnd();
+    });
+
+    onUnmounted(() => {
     });
 </script>
 <template>
-    <!-- <NuxtLink to="/access/main">
-    </NuxtLink> -->
     <div class="grid grid-rows-3 grid-flow-col gap-2
         pt-2
         2xl:pb-40 xl:pb-40 lg:pb-48 md:pb-40 sm:pb-64 pb-64 px-2">
 
         <div class="grid grid-cols-8 gap-2">
-            <div v-for="time_log in time_logs.main_gate" :key="time_log.id"
+            <div v-for="time_log in all_time_logs.main_gate" :key="time_log.id"
                 class="2xl:col-span-1 xl:col-span-1 lg:col-span-2 md:col-span-2 sm:col-span-4 col-span-4">
                 <div class="card card-compact w-full h-full glass shadow-lg">
                     <figure>
                         <img :src="getUserDetails(time_log, 'avatar_url')"
-                            @error="$event.target.src = time_log.userType == 'employee' ? no_picture_employee_gcgmmc : no_picture_trainee_blank" />
+                            @error="$event.target.src = time_log.userType == 'employee'
+                                ? no_picture_employee_gcgmmc
+                                : (time_log.userType == 'trainee'
+                                    ? no_picture_trainee_blank
+                                    : no_picture_remote_worker_blank)" />
                     </figure>
                     <div class="card-body grid content-center justify-items-center">
                         <div class="w-full text-center">
@@ -75,7 +137,7 @@
         </div>
 
         <div class="grid grid-cols-8 gap-2">
-            <div v-for="time_log in time_logs.opd_gate" :key="time_log.id"
+            <div v-for="time_log in all_time_logs.opd_gate" :key="time_log.id"
                 class="2xl:col-span-1 xl:col-span-1 lg:col-span-2 md:col-span-2 sm:col-span-4 col-span-4" >
                 <div class="card card-compact w-full h-full glass shadow-lg">
                     <figure>
@@ -109,7 +171,7 @@
         </div>
 
         <div class="grid grid-cols-8 gap-2">
-            <div v-for="time_log in time_logs.back_gate" :key="time_log.id"
+            <div v-for="time_log in all_time_logs.back_gate" :key="time_log.id"
                 class="2xl:col-span-1 xl:col-span-1 lg:col-span-2 md:col-span-2 sm:col-span-4 col-span-4" >
                 <div class="card card-compact w-full h-full glass shadow-lg">
                     <figure>
@@ -141,6 +203,5 @@
                 </div>
             </div>
         </div>
-
     </div>
 </template>

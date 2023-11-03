@@ -8,7 +8,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "supabase-start": "npx supabase start",
-    "supabase-stop": "npx supabase stop --backup"
+    "supabase-stop": "npx supabase stop --backup",
+    "start": "NITRO_PORT=8080 node .output/server/index.mj"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
@@ -18,18 +19,17 @@
     "@vueuse/nuxt": "^10.4.1",
     "daisyui": "^3.6.5",
     "nuxt": "^3.7.0",
-    "prisma": "^5.3.1"
+    "prisma": "^5.4.2"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.4.11",
-    "@prisma/client": "^5.3.1",
+    "@prisma/client": "^5.4.2",
+    "@supabase/realtime-js": "^2.8.0",
+    "@supabase/supabase-js": "^2.38.1",
     "moment": "^2.29.4",
     "pinia": "^2.1.6",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
   },
   "type": "module",
   "overrides": {
